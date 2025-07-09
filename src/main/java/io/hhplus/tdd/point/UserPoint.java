@@ -1,7 +1,6 @@
 package io.hhplus.tdd.point;
 
 import io.hhplus.tdd.exception.InsufficientPointException;
-import io.hhplus.tdd.exception.InvalidPointException;
 import io.hhplus.tdd.exception.OverPointLimitException;
 
 public record UserPoint(
@@ -18,7 +17,7 @@ public record UserPoint(
 
     public UserPoint {
         if (point < MIN_POINT) {
-            throw new InvalidPointException();
+            throw new InsufficientPointException();
         }
         if (point > MAX_POINT) {
             throw new OverPointLimitException();
@@ -28,7 +27,7 @@ public record UserPoint(
 
     public UserPoint add(long amount) {
         if (amount < 0) {
-            throw new InvalidPointException();
+            throw new InsufficientPointException();
         }
         long newPoint = this.point + amount;
         if (newPoint > MAX_POINT) {
@@ -39,7 +38,7 @@ public record UserPoint(
 
     public UserPoint subtract(long amount) {
         if (amount < 0) {
-            throw new InvalidPointException();
+            throw new InsufficientPointException();
         }
         long newPoint = this.point - amount;
         if (newPoint < MIN_POINT) {
