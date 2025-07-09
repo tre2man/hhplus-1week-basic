@@ -13,12 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * 해당 테스트는 경계값(정책)을 기준으로 경계값, 미만/초과 값을 테스트로 진행했습니다.
  */
 class UserPointTest {
+    private static final long MIN_POINT = 0L;
+    private static final long MAX_POINT = 1_000_000_000L;
 
     /**
      * 경계값 내부 포인트 객체 생성 성공
      */
     @ParameterizedTest
-    @ValueSource(longs = {0L, 1L,999_999_999L, 1_000_000_000L})
+    @ValueSource(longs = {MIN_POINT, 1L,999_999_999L, MAX_POINT})
     void 경계값_포인트_객체_생성_성공(long point) {
         long id = 1L;
 
@@ -93,10 +95,9 @@ class UserPointTest {
     @Test
     void 감소_포인트_0미만_예외() {
         long id = 1L;
-        long point = 0L;
         long subtractAmount = 1L;
 
-        UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
+        UserPoint userPoint = new UserPoint(id, MIN_POINT, System.currentTimeMillis());
         assertThrows(
                 InsufficientPointException.class,
                 () -> userPoint.subtract(subtractAmount)
@@ -109,10 +110,9 @@ class UserPointTest {
     @Test
     void 추가_포인트_최대값_초과_예외() {
         long id = 1L;
-        long point = 1_000_000_000L;
         long addAmount = 1L;
 
-        UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
+        UserPoint userPoint = new UserPoint(id, MAX_POINT, System.currentTimeMillis());
         assertThrows(
                 OverPointLimitException.class,
                 () -> userPoint.add(addAmount)
@@ -137,13 +137,12 @@ class UserPointTest {
     @Test
     void 포인트_추가_성공() {
         long id = 1L;
-        long point = 0L;
         long addAmount = 1L;
 
-        UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
+        UserPoint userPoint = new UserPoint(id, MIN_POINT, System.currentTimeMillis());
         UserPoint updatedUserPoint = userPoint.add(addAmount);
 
-        assertEquals(1L, updatedUserPoint.point());
+        assertEquals(MIN_POINT + addAmount, updatedUserPoint.point());
     }
 
     /**
@@ -152,12 +151,11 @@ class UserPointTest {
     @Test
     void 포인트_감소_성공() {
         long id = 1L;
-        long point = 1_000_000_000L;
         long subtractAmount = 1L;
 
-        UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
+        UserPoint userPoint = new UserPoint(id, MAX_POINT, System.currentTimeMillis());
         UserPoint updatedUserPoint = userPoint.subtract(subtractAmount);
 
-        assertEquals(999_999_999L, updatedUserPoint.point());
+        assertEquals(MAX_POINT - subtractAmount, updatedUserPoint.point());
     }
 }
