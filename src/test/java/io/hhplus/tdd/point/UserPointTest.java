@@ -1,61 +1,53 @@
 package io.hhplus.tdd.point;
 
 import io.hhplus.tdd.exception.InsufficientPointException;
-import io.hhplus.tdd.exception.InvalidPointException;
 import io.hhplus.tdd.exception.OverPointLimitException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * 해당 테스트는 경계값(정책)을 기준으로 경계값, 미만/초과 값을 테스트로 진행했습니다.
  */
 class UserPointTest {
+
     /**
-     * 최소 경계값 0 보다 1 작은 포인트 객체 생성 실패
+     * 경계값 내부 포인트 객체 생성 성공
      */
-    @Test
-    void 음수_포인트_객체_생성_실패() {
+    @ParameterizedTest
+    @ValueSource(longs = {0L, 1L,999_999_999L, 1_000_000_000L})
+    void 경계값_포인트_객체_생성_성공(long point) {
         long id = 1L;
-        long point = -100L;
+
+        UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
+        assertEquals(point, userPoint.point());
+    }
+
+    /**
+     * 경계값 벗어난 음수 포인트 객체 생성 실패
+     */
+    @ParameterizedTest
+    @ValueSource(longs = {-1L, Long.MIN_VALUE})
+    void 경계값_벗어난_음수_포인트_객체_생성_실패(long point) {
+        long id = 1L;
 
         assertThrows(
-                InvalidPointException.class,
+                InsufficientPointException.class,
                 () -> new UserPoint(id, point, System.currentTimeMillis())
         );
     }
 
     /**
-     * 최소 경계값 0 포인트 객체 생성 성공
+     * 경계값 벗어난 양수 포인트 객체 생성 실패
+     * @param point
      */
-    @Test
-    void 경계값_포인트_객체_생성_성공() {
+    @ParameterizedTest
+    @ValueSource(longs = {1_000_000_001L, Long.MAX_VALUE})
+    void 경계값_벗어난_양수_포인트_객체_생성_실패(long point) {
         long id = 1L;
-        long point = 0L;
-
-        UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
-        assert userPoint.point() == 0L;
-    }
-
-    /**
-     * 최대 경계값 10억 포인트 객체 생성 성공
-     */
-    @Test
-    void 최대값_포인트_객체_생성_성공() {
-        long id = 1L;
-        long point = 1_000_000_000L;
-
-        UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
-        assert userPoint.point() == 1_000_000_000L;
-    }
-
-    /**
-     * 최대 경계값 10억 보다 1 큰 포인트 객체 생성 실패
-     */
-    @Test
-    void 최대값_초과_포인트_객체_생성_실패() {
-        long id = 1L;
-        long point = 1_000_000_001L;
 
         assertThrows(
                 OverPointLimitException.class,
@@ -74,7 +66,7 @@ class UserPointTest {
 
         UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
         assertThrows(
-                InvalidPointException.class,
+                InsufficientPointException.class,
                 () -> userPoint.add(addAmount)
         );
     }
@@ -90,7 +82,7 @@ class UserPointTest {
 
         UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
         assertThrows(
-                InvalidPointException.class,
+                InsufficientPointException.class,
                 () -> userPoint.subtract(subtractAmount)
         );
     }
@@ -130,17 +122,19 @@ class UserPointTest {
     /**
      * 포인트 생성 성공
      */
+    @Test
     void 포인트_생성_성공() {
         long id = 1L;
         long point = 100L;
 
         UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
-        assert userPoint.point() == 100L;
+        assertEquals(point, userPoint.point());
     }
 
     /**
      * 포인트 추가 성공
      */
+    @Test
     void 포인트_추가_성공() {
         long id = 1L;
         long point = 0L;
@@ -149,12 +143,13 @@ class UserPointTest {
         UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
         UserPoint updatedUserPoint = userPoint.add(addAmount);
 
-        assert updatedUserPoint.point() == 1L;
+        assertEquals(1L, updatedUserPoint.point());
     }
 
     /**
      * 포인트 감소 성공
      */
+    @Test
     void 포인트_감소_성공() {
         long id = 1L;
         long point = 1_000_000_000L;
@@ -163,6 +158,6 @@ class UserPointTest {
         UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
         UserPoint updatedUserPoint = userPoint.subtract(subtractAmount);
 
-        assert updatedUserPoint.point() == 999_999_999L;
+        assertEquals(999_999_999L, updatedUserPoint.point());
     }
 }
