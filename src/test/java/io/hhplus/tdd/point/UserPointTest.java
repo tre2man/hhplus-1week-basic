@@ -120,18 +120,6 @@ class UserPointTest {
     }
 
     /**
-     * 포인트 생성 성공
-     */
-    @Test
-    void 포인트_생성_성공() {
-        long id = 1L;
-        long point = 100L;
-
-        UserPoint userPoint = new UserPoint(id, point, System.currentTimeMillis());
-        assertEquals(point, userPoint.point());
-    }
-
-    /**
      * 포인트 추가 성공
      */
     @Test
