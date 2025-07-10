@@ -9,6 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -155,5 +157,39 @@ class PointServiceTest {
         assertThrows(
                 RuntimeException.class,
                 () -> pointService.usePoint(userPoint.id(), subtractAmount));
+    }
+
+    // 특정 유저의 포인트 사용 내역을 조회하는 동작을 확인함으로서 정상적인 동작의 신뢰도 증가
+    @Test
+    @DisplayName("[성공] 특정 유저의 포인트 사용 내역을 조회하는 동작을 확인함으로서 정상적인 동작의 신뢰도 증가")
+    void 특정_유저_포인트_사용_내역_조회_성공() {
+        // given
+        long userId = 1L;
+        PointHistory pointHistory = new PointHistory(1L, userId, 1000L, TransactionType.USE, System.currentTimeMillis());
+        when(pointHistoryTable.selectAllByUserId(userId)).thenReturn(List.of(pointHistory));
+
+        // when
+        List<PointHistory> histories = pointService.getPointHistories(userId);
+
+        // then
+        assertThat(histories).hasSize(1);
+        assertThat(histories.get(0)).isEqualTo(pointHistory);
+    }
+
+    // 특정 유저의 포인트 추가 내역을 조회하는 동작을 확인함으로서 정상적인 동작의 신뢰도 증가
+    @Test
+    @DisplayName("[성공] 특정 유저의 포인트 추가 내역을 조회하는 동작을 확인함으로서 정상적인 동작의 신뢰도 증가")
+    void 특정_유저_포인트_추가_내역_조회_성공() {
+        // given
+        long userId = 1L;
+        PointHistory pointHistory = new PointHistory(1L, userId, 1000L, TransactionType.CHARGE, System.currentTimeMillis());
+        when(pointHistoryTable.selectAllByUserId(userId)).thenReturn(List.of(pointHistory));
+
+        // when
+        List<PointHistory> histories = pointService.getPointHistories(userId);
+
+        // then
+        assertThat(histories).hasSize(1);
+        assertThat(histories.get(0)).isEqualTo(pointHistory);
     }
 }
