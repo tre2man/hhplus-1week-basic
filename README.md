@@ -3,7 +3,7 @@
 ## 과제 목표
 - PATCH `/point/{id}/charge` : 포인트 충전 API
 - PATCH `/point/{id}/use` : 포인트 사용 API
-- GET `/point/{id}` : 포인트를 조회 API
+- GET `/point/{id}` : 포인트 조회 API
 - GET `/point/{id}/histories` : 포인트 내역 조회 API
 - 잔고가 부족할 경우, 포인트 사용은 실패하여야 합니다.
 
