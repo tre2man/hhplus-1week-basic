@@ -3,6 +3,8 @@ package io.hhplus.tdd.point;
 import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 
+import java.util.List;
+
 public class PointService {
     private final UserPointTable userPointTable;
     private final PointHistoryTable pointHistoryTable;
@@ -28,5 +30,9 @@ public class PointService {
         long newPoint = currentPoint - useAmount;
         userPointTable.insertOrUpdate(userId, newPoint);
         pointHistoryTable.insert(userId, useAmount, TransactionType.USE, System.currentTimeMillis());
+    }
+
+    List<PointHistory> getPointHistories(long userId) {
+        return pointHistoryTable.selectAllByUserId(userId);
     }
 }
